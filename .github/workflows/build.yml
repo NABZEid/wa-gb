@@ -14,7 +14,13 @@ jobs:
         with: {distribution: temurin, java-version: "17"}
       - uses: subosito/flutter-action@v2
         with: {channel: stable}
-      - run: bash setup.sh
+      - name: Setup project
+        run: |
+          flutter create . --org com.gb --project-name wa_gb --platforms=android
+          rm -rf test
+          M=android/app/src/main/AndroidManifest.xml
+          sed -i 's#<application#<uses-permission android:name="android.permission.INTERNET"/>\n    <application android:usesCleartextTraffic="true"#' $M
+          flutter pub get
       - run: flutter build apk --release
       - uses: softprops/action-gh-release@v2
         with:
